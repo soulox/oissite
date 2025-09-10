@@ -1,0 +1,586 @@
+# Cursor AI Rules for oissite
+
+## Project Overview
+OISSite is a comprehensive web hosting and domain services platform that empowers businesses and individuals to achieve online success through reliable, scalable, and user-friendly hosting solutions. From Shared Hosting and Domains to VPS and Cloud plans, we provide all the tools needed for online success.
+
+## Technical Stack
+- **Platform**: Web
+- **Framework**: Next.js 14+ with App Router
+- **Styling**: Tailwind CSS with custom design system
+- **Components**: shadcn/ui component library
+- **State Management**: React Context API and Zustand
+- **Authentication**: NextAuth.js with JWT tokens
+- **Form Handling**: React Hook Form with Zod validation
+- **API**: Next.js API routes with tRPC for type-safe APIs
+- **Database**: PostgreSQL with Prisma ORM
+- **Caching**: Redis for session management and caching
+- **File Storage**: AWS S3 for static assets and backups
+- **Email**: SendGrid for transactional emails
+- **Monitoring**: Vercel Analytics and custom monitoring
+
+## Code Generation Rules
+
+### 1. Project Structure
+Follow these directory and file organization rules:
+
+```
+oissite/
+├── src/
+│   ├── app/                    # Next.js App Router
+│   │   ├── (auth)/            # Route groups
+│   │   ├── (dashboard)/       # Protected routes
+│   │   ├── api/               # API routes
+│   │   ├── globals.css        # Global styles
+│   │   ├── layout.tsx         # Root layout
+│   │   └── page.tsx           # Home page
+│   ├── components/            # Reusable components
+│   │   ├── ui/                # shadcn/ui components
+│   │   ├── forms/             # Form components
+│   │   ├── layout/            # Layout components
+│   │   └── features/          # Feature-specific components
+│   ├── lib/                   # Utility functions and configurations
+│   │   ├── auth.ts            # Authentication utilities
+│   │   ├── db.ts              # Database configuration
+│   │   ├── utils.ts           # General utilities
+│   │   └── validations.ts     # Zod schemas
+│   ├── hooks/                 # Custom React hooks
+│   ├── stores/                # Zustand stores
+│   ├── types/                 # TypeScript type definitions
+│   └── styles/                # Additional styles
+├── public/                    # Static assets
+├── docs/                      # Documentation
+├── tests/                     # Test files
+└── config files              # Configuration files
+```
+
+**File Naming Conventions:**
+- **Components**: PascalCase (e.g., `UserDashboard.tsx`)
+- **Pages**: kebab-case (e.g., `user-settings/page.tsx`)
+- **Utilities**: camelCase (e.g., `formatDate.ts`)
+- **Types**: PascalCase with `.types.ts` suffix (e.g., `User.types.ts`)
+- **Hooks**: camelCase with `use` prefix (e.g., `useUserData.ts`)
+- **Stores**: camelCase with `Store` suffix (e.g., `userStore.ts`)
+- **Constants**: UPPER_SNAKE_CASE (e.g., `API_ENDPOINTS.ts`)
+
+**Import/Export Patterns:**
+```typescript
+// Preferred import order:
+// 1. React and Next.js imports
+import React from 'react'
+import { NextPage } from 'next'
+
+// 2. Third-party libraries
+import { z } from 'zod'
+import { Button } from '@/components/ui/button'
+
+// 3. Internal imports (absolute paths)
+import { UserService } from '@/lib/services/user'
+import { UserType } from '@/types/user'
+
+// 4. Relative imports
+import './styles.css'
+
+// Named exports preferred over default exports
+export const UserDashboard = () => { /* ... */ }
+```
+
+### 2. Code Style
+Adhere to these formatting rules:
+
+**Indentation and Spacing:**
+- **Indentation**: 2 spaces (no tabs)
+- **Line Length**: Maximum 100 characters
+- **Trailing Commas**: Always use trailing commas in objects and arrays
+- **Semicolons**: Always use semicolons
+
+**Quotes:**
+- **Strings**: Use single quotes for strings
+- **JSX**: Use double quotes for JSX attributes
+- **Template Literals**: Use backticks for template literals
+
+**Bracket Placement:**
+```typescript
+// Good: Opening brace on same line
+if (condition) {
+  // code
+}
+
+// Good: Function declarations
+function myFunction() {
+  // code
+}
+
+// Good: Arrow functions
+const myFunction = () => {
+  // code
+}
+```
+
+### 3. Component Guidelines
+When generating components:
+
+**Component Composition:**
+- **Single Responsibility**: Each component should have one clear purpose
+- **Composition over Inheritance**: Use composition patterns
+- **Props Interface**: Define clear prop interfaces
+
+```typescript
+// Good: Clear prop interface
+interface UserCardProps {
+  user: User
+  showActions?: boolean
+  onEdit?: (user: User) => void
+  onDelete?: (userId: number) => void
+}
+
+const UserCard: React.FC<UserCardProps> = ({
+  user,
+  showActions = false,
+  onEdit,
+  onDelete,
+}) => {
+  // Component implementation
+}
+```
+
+**State Management:**
+- **Local state** for component-specific data
+- **Context** for shared state across components
+- **Zustand** for complex global state
+- **Server state** with React Query for API data
+
+**Event Handling:**
+- **Descriptive handler names** starting with 'handle'
+- **Proper event typing** for TypeScript
+- **Debouncing** for expensive operations
+
+**Custom Hooks:**
+- **Prefix with 'use'** for custom hooks
+- **Single responsibility** for each hook
+- **Return objects** for multiple values
+
+**Render Optimization:**
+- **React.memo** for expensive components
+- **useMemo** for expensive calculations
+- **useCallback** for stable function references
+
+### 4. Type System
+For TypeScript implementation:
+
+**Type Annotations:**
+- **Explicit types** for function parameters and return values
+- **Interface over type** for object shapes
+- **Union types** for multiple possible values
+- **Generic types** for reusable components
+
+```typescript
+// Good: Explicit function types
+function calculateTotal(items: Item[]): number {
+  return items.reduce((sum, item) => sum + item.price, 0)
+}
+
+// Good: Interface for object shapes
+interface User {
+  id: number
+  name: string
+  email: string
+  role: UserRole
+}
+
+// Good: Union types
+type Status = 'loading' | 'success' | 'error'
+
+// Good: Generic types
+interface ApiResponse<T> {
+  data: T
+  status: number
+  message: string
+}
+```
+
+**Null/Undefined Handling:**
+- **Explicit null checks** before accessing properties
+- **Optional chaining** for safe property access
+- **Nullish coalescing** for default values
+
+**Error Handling:**
+- **Try-catch blocks** for async operations
+- **Custom error classes** for specific error types
+- **Proper error logging** and user feedback
+
+### 5. API Integration
+When working with APIs:
+
+**API Patterns:**
+- **RESTful conventions** for API endpoints
+- **tRPC** for type-safe API calls
+- **Proper error handling** with custom error types
+- **Request/response validation** with Zod schemas
+
+```typescript
+// Good: API integration with tRPC
+const userRouter = createTRPCRouter({
+  getUser: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .query(async ({ input }) => {
+      const user = await db.user.findUnique({
+        where: { id: input.id }
+      })
+      if (!user) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'User not found'
+        })
+      }
+      return user
+    }),
+})
+```
+
+**Authentication:**
+- **JWT tokens** with NextAuth.js
+- **Secure token storage** (httpOnly cookies)
+- **Token refresh** mechanism
+- **Role-based access control**
+
+**Data Validation:**
+- **Zod schemas** for input validation
+- **Server-side validation** for all inputs
+- **Type-safe API responses**
+
+### 6. State Management
+For managing application state:
+
+**State Solutions:**
+- **React Context** for shared UI state
+- **Zustand** for complex global state
+- **React Query** for server state management
+- **Local state** for component-specific data
+
+```typescript
+// Good: Zustand store
+interface UserStore {
+  user: User | null
+  setUser: (user: User) => void
+  clearUser: () => void
+}
+
+const useUserStore = create<UserStore>((set) => ({
+  user: null,
+  setUser: (user) => set({ user }),
+  clearUser: () => set({ user: null }),
+}))
+```
+
+**State Optimization:**
+- **Minimize re-renders** with proper state structure
+- **Use selectors** for derived state
+- **Batch updates** when possible
+
+### 7. Testing Requirements
+Generate tests following these rules:
+
+**Test Structure:**
+- **Arrange-Act-Assert** pattern
+- **Descriptive test names** that explain what is being tested
+- **Mock data** for consistent testing
+- **Integration tests** for API endpoints
+
+```typescript
+// Good: Test structure
+describe('UserCard Component', () => {
+  it('should display user name and email', () => {
+    // Arrange
+    const mockUser: User = {
+      id: 1,
+      name: 'John Doe',
+      email: 'john@example.com',
+      role: 'user'
+    }
+
+    // Act
+    render(<UserCard user={mockUser} />)
+
+    // Assert
+    expect(screen.getByText('John Doe')).toBeInTheDocument()
+    expect(screen.getByText('john@example.com')).toBeInTheDocument()
+  })
+})
+```
+
+**Test Coverage:**
+- **Minimum 80%** code coverage
+- **100% coverage** for critical business logic
+- **Unit tests** for all utility functions
+- **Integration tests** for API endpoints
+- **E2E tests** for critical user flows
+
+### 8. Security Guidelines
+Enforce security practices:
+
+**Authentication Security:**
+- **Secure token storage** (httpOnly cookies)
+- **Password requirements**: Minimum 8 characters with complexity
+- **Multi-factor authentication** for admin accounts
+- **Session timeout**: 30 minutes of inactivity
+
+**Data Protection:**
+- **Input validation** with Zod schemas
+- **SQL injection prevention** with Prisma ORM
+- **XSS protection** with Content Security Policy
+- **CSRF protection** with token-based validation
+
+```typescript
+// Good: Input validation
+const userSchema = z.object({
+  name: z.string().min(1).max(100),
+  email: z.string().email(),
+  age: z.number().min(18).max(120),
+})
+
+const validateUserInput = (data: unknown) => {
+  try {
+    return userSchema.parse(data)
+  } catch (error) {
+    throw new ValidationError('Invalid user data')
+  }
+}
+```
+
+**Environment Variables:**
+- **Never commit** sensitive data
+- **Use .env.local** for local development
+- **Validate environment** variables at startup
+
+### 9. Performance Rules
+Optimize for performance:
+
+**Bundle Optimization:**
+- **Code splitting** with dynamic imports
+- **Tree shaking** to remove unused code
+- **Bundle analysis** to identify large dependencies
+
+```typescript
+// Good: Dynamic imports for code splitting
+const UserDashboard = lazy(() => import('@/components/UserDashboard'))
+const AdminPanel = lazy(() => import('@/components/AdminPanel'))
+```
+
+**Lazy Loading:**
+- **Route-based** lazy loading for pages
+- **Component-based** lazy loading for heavy components
+- **Image lazy loading** for better performance
+
+**Performance Targets:**
+- **First Contentful Paint**: < 1.5 seconds
+- **Largest Contentful Paint**: < 2.5 seconds
+- **First Input Delay**: < 100 milliseconds
+- **Cumulative Layout Shift**: < 0.1
+- **Bundle Size**: < 250KB for initial JavaScript bundle
+
+### 10. Documentation
+Generate documentation that:
+
+**JSDoc Requirements:**
+- **All public functions** must have JSDoc comments
+- **Complex logic** should be documented
+- **API endpoints** must be documented
+
+```typescript
+/**
+ * Calculates the total price including tax and discounts
+ * @param items - Array of items to calculate total for
+ * @param taxRate - Tax rate as decimal (e.g., 0.08 for 8%)
+ * @param discountCode - Optional discount code to apply
+ * @returns Total price with tax and discounts applied
+ * @throws {ValidationError} When items array is empty
+ * @example
+ * ```typescript
+ * const total = calculateTotalPrice(items, 0.08, 'SAVE10')
+ * console.log(`Total: $${total.toFixed(2)}`)
+ * ```
+ */
+function calculateTotalPrice(
+  items: Item[],
+  taxRate: number,
+  discountCode?: string
+): number {
+  // Implementation
+}
+```
+
+**Code Comments:**
+- **Explain why**, not what
+- **Use TODO comments** for temporary code
+- **Remove commented code** before committing
+
+## Best Practices
+
+### 1. Code Quality
+- **Write self-documenting code** with meaningful names
+- **Keep functions small and focused** (max 20 lines)
+- **Follow DRY principles** but don't over-abstract
+- **Use meaningful names** that explain intent
+- **Handle errors appropriately** with proper error types
+- **Write maintainable code** with clear separation of concerns
+
+### 2. Performance
+- **Optimize bundle size** with code splitting and tree shaking
+- **Implement proper caching** strategies with React Query
+- **Use lazy loading** for non-critical components
+- **Optimize images** with Next.js Image component
+- **Monitor Core Web Vitals** and performance metrics
+
+### 3. Security
+- **Validate all inputs** with Zod schemas
+- **Sanitize data output** to prevent XSS
+- **Use proper authentication** with NextAuth.js
+- **Protect sensitive data** with encryption
+- **Follow OWASP guidelines** for web security
+
+### 4. Accessibility
+- **WCAG 2.1 AA compliance** for all components
+- **Keyboard navigation** support
+- **Screen reader** compatibility
+- **Color contrast** minimum 4.5:1 ratio
+- **Semantic HTML** structure
+
+### 5. Hosting-Specific Features
+When working on hosting-related features:
+
+**Shared Hosting:**
+- **One-click WordPress** installation
+- **Email account** management
+- **File manager** with drag-and-drop
+- **Database management** tools
+- **SSL certificate** installation
+- **Automated backups**
+
+**VPS Hosting:**
+- **Multiple configurations** (1-8 vCPUs, 1-32GB RAM)
+- **One-click OS** installation
+- **Web-based control panel**
+- **Resource monitoring** and alerts
+- **Easy scaling** and upgrades
+
+**Cloud Hosting:**
+- **Auto-scaling** based on usage
+- **Load balancing** across servers
+- **Global CDN** integration
+- **Container support** for modern applications
+- **API access** for automation
+
+**Domain Management:**
+- **Domain search** and availability checking
+- **Domain registration** with multiple TLDs
+- **DNS management** with common record types
+- **Subdomain creation** and management
+- **WHOIS privacy** protection
+
+## Development Workflow
+
+### Git Workflow
+- **Feature branches** for new features
+- **Pull requests** for code review
+- **Squash commits** before merging
+
+### Branch Naming
+- **feature/**: New features (e.g., `feature/user-authentication`)
+- **bugfix/**: Bug fixes (e.g., `bugfix/login-validation`)
+- **hotfix/**: Critical fixes (e.g., `hotfix/security-patch`)
+- **refactor/**: Code refactoring (e.g., `refactor/api-structure`)
+
+### Commit Message Format
+```
+type(scope): description
+
+[optional body]
+
+[optional footer]
+```
+
+**Types:**
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes
+- `refactor`: Code refactoring
+- `test`: Test additions/changes
+- `chore`: Build process or auxiliary tool changes
+
+### Code Review Process
+- **At least one approval** required
+- **Automated checks** must pass
+- **Security review** for sensitive changes
+- **Performance review** for critical paths
+
+## Project-Specific Rules
+
+### Hosting Platform Features
+When implementing hosting features, ensure:
+
+1. **Unified Dashboard**: Single interface for all services
+2. **Real-time Monitoring**: Performance metrics and uptime tracking
+3. **Automated Backups**: Daily backups with 30-day retention
+4. **Security Features**: SSL certificates, firewalls, and monitoring
+5. **Scalability**: Easy upgrades from shared to VPS to cloud
+6. **Customer Support**: 24/7 support with multiple channels
+
+### Business Requirements
+- **Target Audience**: Small to medium businesses, freelancers, developers
+- **Revenue Goals**: $2M ARR within 18 months
+- **Performance**: 99.9% uptime guarantee
+- **Customer Satisfaction**: 4.5+ rating target
+- **Market Position**: Top 5 hosting provider for SMBs
+
+### Compliance Requirements
+- **GDPR Compliance**: EU data protection regulation
+- **PCI DSS**: Payment card industry compliance
+- **SOC 2**: Security and availability controls
+- **Regular Audits**: Quarterly security assessments
+
+## Tools and Configuration
+
+### Required Tools
+- **ESLint**: Code linting with Next.js and TypeScript rules
+- **Prettier**: Code formatting
+- **Husky**: Git hooks for pre-commit checks
+- **Jest**: Testing framework
+- **React Testing Library**: Component testing
+- **Playwright**: E2E testing
+
+### VS Code Configuration
+```json
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "emmet.includeLanguages": {
+    "typescript": "html",
+    "typescriptreact": "html"
+  }
+}
+```
+
+## Enforcement
+
+These rules are enforced through:
+- **ESLint configuration** with strict TypeScript rules
+- **Prettier formatting** for consistent code style
+- **Git hooks** for pre-commit validation
+- **CI/CD pipeline** for automated testing
+- **Code review process** for quality assurance
+
+## Updates and Maintenance
+
+- **Regular reviews** of these rules (quarterly)
+- **Team feedback** incorporation
+- **Technology updates** as the stack evolves
+- **Performance optimization** based on metrics
+- **Security updates** as threats evolve
+
+---
+
+**Remember**: These rules are designed to ensure consistency, maintainability, and quality across the oissite codebase. Always prioritize user experience, security, and performance when making development decisions.
