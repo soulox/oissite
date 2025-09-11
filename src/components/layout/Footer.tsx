@@ -1,7 +1,10 @@
+'use client'
+
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram } from 'lucide-react'
+import { Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram, Cookie } from 'lucide-react'
+import { useCookieConsent } from '@/contexts/CookieConsentContext'
 
 const footerLinks = {
   hosting: [
@@ -50,6 +53,8 @@ const socialLinks = [
 ]
 
 export function Footer() {
+  const { showSettings } = useCookieConsent()
+
   return (
     <footer className="bg-muted/50 border-t">
       <div className="container mx-auto px-4 py-12">
@@ -203,6 +208,13 @@ export function Footer() {
                     {link.label}
                   </Link>
                 ))}
+                <button
+                  onClick={showSettings}
+                  className="hover:text-primary transition-colors flex items-center space-x-1"
+                >
+                  <Cookie className="h-3 w-3" />
+                  <span>Cookie Settings</span>
+                </button>
               </div>
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
