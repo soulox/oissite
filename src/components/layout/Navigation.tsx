@@ -49,6 +49,11 @@ const navigationItems = [
     label: 'About',
     href: '/about',
   },
+  {
+    label: 'Client Portal',
+    href: '/client-portal',
+    external: true,
+  },
 ]
 
 export function Navigation() {
