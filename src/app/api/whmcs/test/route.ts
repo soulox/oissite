@@ -19,8 +19,8 @@ export async function GET(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Test API connection by fetching products
-    const products = await whmcsClient.getProducts()
+    // Test API connection with a basic action
+    const response = await whmcsClient.makeRequest('GetModuleQueue')
     
     return NextResponse.json({
       success: true,
@@ -31,12 +31,8 @@ export async function GET(request: NextRequest) {
         authentication: whmcsConfig.version.startsWith('7.') ? 'username/password' : 'identifier/secret/accesskey',
       },
       data: {
-        productsCount: products.length,
-        sampleProducts: products.slice(0, 3).map(p => ({
-          id: p.id,
-          name: p.name,
-          type: p.type,
-        }))
+        apiResponse: response,
+        message: 'Basic API call successful'
       }
     })
   } catch (error) {

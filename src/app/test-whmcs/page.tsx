@@ -77,6 +77,24 @@ export default function TestWhmcsPage() {
     }
   }
 
+  const testPermissions = async () => {
+    setLoading(true)
+    setTestResult(null)
+    
+    try {
+      const response = await fetch('/api/whmcs/test-permissions')
+      const result = await response.json()
+      setTestResult(result)
+    } catch (error) {
+      setTestResult({
+        success: false,
+        error: 'Failed to test permissions'
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="container mx-auto px-4 py-16">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -87,7 +105,7 @@ export default function TestWhmcsPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Connection Test */}
           <Card>
             <CardHeader>
@@ -154,6 +172,42 @@ export default function TestWhmcsPage() {
                   <li>API endpoint accessibility</li>
                   <li>Identifier & secret authentication</li>
                   <li>Response analysis</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Test Permissions */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Test Permissions</CardTitle>
+              <CardDescription>
+                Find which API actions are allowed
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Button 
+                onClick={testPermissions} 
+                disabled={loading}
+                className="w-full"
+                variant="secondary"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Testing...
+                  </>
+                ) : (
+                  'Test API Permissions'
+                )}
+              </Button>
+              
+              <div className="text-sm text-muted-foreground">
+                This will test:
+                <ul className="list-disc list-inside mt-2 space-y-1">
+                  <li>Multiple API actions</li>
+                  <li>Find working permissions</li>
+                  <li>Identify restrictions</li>
                 </ul>
               </div>
             </CardContent>

@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: new URLSearchParams({
-          action: 'GetSystemStats',
+          action: 'GetClients',
           identifier: whmcsConfig.api.identifier,
           secret: whmcsConfig.api.secret,
           responsetype: 'json',
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: new URLSearchParams({
-          action: 'GetSystemStats',
+          action: 'GetClients',
           identifier: whmcsConfig.api.identifier,
           secret: whmcsConfig.api.secret,
           responsetype: 'json',

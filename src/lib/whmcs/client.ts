@@ -110,7 +110,7 @@ export class WhmcsApiClient {
    * Make a request to the WHMCS API
    * Compatible with WHMCS 7.10 and above
    */
-  private async makeRequest<T = any>(
+  async makeRequest<T = any>(
     action: string,
     params: WhmcsApiParams = {}
   ): Promise<WhmcsApiResponse<T>> {
@@ -162,11 +162,24 @@ export class WhmcsApiClient {
       return data
     } catch (error) {
       console.error('WHMCS API request failed:', error)
+      
+      // Check if it's an SSL certificate error
+      if (error instanceof Error && error.message.includes('SSL') || 
+          error instanceof Error && error.message.includes('certificate') ||
+          error instanceof Error && error.message.includes('trust relationship')) {
+        throw new Error(`SSL Certificate Error: ${error.message}. Please check your WHMCS SSL certificate or use HTTP for development.`)
+      }
+      
       throw error
     }
   }
 
   // Client Management
+  async getClients(): Promise<WhmcsClient[]> {
+    const response = await this.makeRequest<{ clients: { client: WhmcsClient[] } }>('GetClients')
+    return response.data!.clients.client
+  }
+
   async getClient(clientId: string): Promise<WhmcsClient> {
     const response = await this.makeRequest<{ client: WhmcsClient }>('GetClientsDetails', {
       clientid: clientId,
