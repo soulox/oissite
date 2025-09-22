@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { WhmcsClientPortal } from '@/components/features/whmcs/WhmcsClientPortal'
 import { WhmcsOrderForm } from '@/components/features/whmcs/WhmcsOrderForm'
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
@@ -12,7 +13,8 @@ export const metadata: Metadata = {
 
 export default function ClientPortalPage() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <ProtectedRoute>
+      <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
       <section className="relative py-20 lg:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5" />
@@ -53,6 +55,7 @@ export default function ClientPortalPage() {
           </Tabs>
         </div>
       </section>
-    </div>
+      </div>
+    </ProtectedRoute>
   )
 }

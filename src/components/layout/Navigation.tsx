@@ -5,8 +5,9 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { Menu, X, ChevronDown } from 'lucide-react'
+import { Menu, X, ChevronDown, User, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useAuth } from '@/contexts/AuthContext'
 
 const navigationItems = [
   {
@@ -61,6 +62,7 @@ export function Navigation() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null)
   const pathname = usePathname()
+  const { user, logout, isAuthenticated } = useAuth()
 
   const isActive = (href: string) => {
     if (href === '/') {
@@ -154,12 +156,29 @@ export function Navigation() {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" asChild>
-              <Link href="/login">Sign In</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/register">Get Started</Link>
-            </Button>
+            {isAuthenticated ? (
+              <>
+                <Button variant="ghost" asChild>
+                  <Link href="/client-portal">
+                    <User className="h-4 w-4 mr-2" />
+                    {user?.firstname} {user?.lastname}
+                  </Link>
+                </Button>
+                <Button variant="ghost" onClick={logout}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="ghost" asChild>
+                  <Link href="/login">Sign In</Link>
+                </Button>
+                <Button asChild>
+                  <Link href="/register">Get Started</Link>
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -204,16 +223,36 @@ export function Navigation() {
                   </div>
                 ))}
                 <div className="pt-4 border-t">
-                  <Button variant="ghost" className="w-full justify-start" asChild>
-                    <Link href="/login" onClick={() => setIsOpen(false)}>
-                      Sign In
-                    </Link>
-                  </Button>
-                  <Button className="w-full mt-2" asChild>
-                    <Link href="/register" onClick={() => setIsOpen(false)}>
-                      Get Started
-                    </Link>
-                  </Button>
+                  {isAuthenticated ? (
+                    <>
+                      <Button variant="ghost" className="w-full justify-start" asChild>
+                        <Link href="/client-portal" onClick={() => setIsOpen(false)}>
+                          <User className="h-4 w-4 mr-2" />
+                          {user?.firstname} {user?.lastname}
+                        </Link>
+                      </Button>
+                      <Button variant="ghost" className="w-full mt-2 justify-start" onClick={() => {
+                        logout()
+                        setIsOpen(false)
+                      }}>
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Sign Out
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button variant="ghost" className="w-full justify-start" asChild>
+                        <Link href="/login" onClick={() => setIsOpen(false)}>
+                          Sign In
+                        </Link>
+                      </Button>
+                      <Button className="w-full mt-2" asChild>
+                        <Link href="/register" onClick={() => setIsOpen(false)}>
+                          Get Started
+                        </Link>
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             </SheetContent>

@@ -1,29 +1,25 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Eye, EyeOff, Mail, Lock, Loader2, AlertCircle } from 'lucide-react'
-import { useAuth } from '@/contexts/AuthContext'
+import { Eye, EyeOff, Mail, Lock, Loader2 } from 'lucide-react'
 
-export function LoginForm() {
-  const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+interface ClientPortalLoginProps {
+  onLoginSuccess: (clientId: string) => void
+}
+
+export function ClientPortalLogin({ onLoginSuccess }: ClientPortalLoginProps) {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    rememberMe: false
   })
-
-  const { login } = useAuth()
-  const router = useRouter()
+  const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -31,59 +27,64 @@ export function LoginForm() {
     setError(null)
 
     try {
-      const result = await login(formData.email, formData.password)
-      
-      if (result.success) {
-        // Redirect to dashboard or intended page
-        const redirectTo = new URLSearchParams(window.location.search).get('redirect') || '/client-portal'
-        router.push(redirectTo)
+      const response = await fetch('/api/whmcs/auth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const result = await response.json()
+
+      if (result.success && result.data?.userid) {
+        onLoginSuccess(result.data.userid)
       } else {
-        setError(result.error || 'Login failed')
+        setError(result.error || 'Invalid credentials')
       }
     } catch (error) {
-      setError('An unexpected error occurred. Please try again.')
+      setError('Failed to connect to server. Please try again.')
     } finally {
       setLoading(false)
     }
   }
 
-  const handleInputChange = (field: string, value: string | boolean) => {
+  const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
   return (
     <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl text-center">Sign In</CardTitle>
-        <CardDescription className="text-center">
-          Enter your credentials to access your account
+      <CardHeader className="text-center">
+        <CardTitle className="text-2xl font-bold">Client Portal Login</CardTitle>
+        <CardDescription>
+          Sign in to access your hosting services, billing, and support
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {error && (
-          <Alert variant="destructive" className="mb-4">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-        
         <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">Email Address</Label>
             <div className="relative">
               <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
                 id="email"
                 type="email"
                 placeholder="Enter your email"
-                className="pl-10"
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
+                className="pl-10"
                 required
               />
             </div>
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
             <div className="relative">
@@ -92,9 +93,9 @@ export function LoginForm() {
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Enter your password"
-                className="pl-10 pr-10"
                 value={formData.password}
                 onChange={(e) => handleInputChange('password', e.target.value)}
+                className="pl-10 pr-10"
                 required
               />
               <Button
@@ -112,44 +113,33 @@ export function LoginForm() {
               </Button>
             </div>
           </div>
-          
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="remember"
-                checked={formData.rememberMe}
-                onCheckedChange={(checked) => handleInputChange('rememberMe', checked as boolean)}
-              />
-              <Label htmlFor="remember" className="text-sm">
-                Remember me
-              </Label>
-            </div>
-            <Link
-              href="/forgot-password"
-              className="text-sm text-primary hover:underline"
-            >
-              Forgot password?
-            </Link>
-          </div>
-          
+
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? (
               <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Signing In...
               </>
             ) : (
               'Sign In'
             )}
           </Button>
-          
-          <div className="text-center text-sm">
-            Don't have an account?{' '}
-            <Link href="/register" className="text-primary hover:underline">
-              Sign up
-            </Link>
-          </div>
         </form>
+
+        <div className="mt-6 text-center">
+          <p className="text-sm text-muted-foreground">
+            Don't have an account?{' '}
+            <a href="/register" className="text-primary hover:underline">
+              Register here
+            </a>
+          </p>
+          <p className="text-sm text-muted-foreground mt-2">
+            Forgot your password?{' '}
+            <a href="/support/contact" className="text-primary hover:underline">
+              Contact support
+            </a>
+          </p>
+        </div>
       </CardContent>
     </Card>
   )

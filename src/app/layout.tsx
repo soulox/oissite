@@ -5,6 +5,7 @@ import { Navigation } from '@/components/layout/Navigation'
 import { Footer } from '@/components/layout/Footer'
 import { Toaster } from '@/components/ui/toaster'
 import { CookieConsentProvider } from '@/contexts/CookieConsentContext'
+import { AuthProvider } from '@/contexts/AuthContext'
 import { CookieConsentBanner } from '@/components/ui/CookieConsentBanner'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -73,17 +74,19 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <CookieConsentProvider>
-          <div className="min-h-screen flex flex-col">
-            <Navigation />
-            <main className="flex-1">
-              {children}
-            </main>
-            <Footer />
-          </div>
-          <Toaster />
-          <CookieConsentBanner />
-        </CookieConsentProvider>
+        <AuthProvider>
+          <CookieConsentProvider>
+            <div className="min-h-screen flex flex-col">
+              <Navigation />
+              <main className="flex-1">
+                {children}
+              </main>
+              <Footer />
+            </div>
+            <Toaster />
+            <CookieConsentBanner />
+          </CookieConsentProvider>
+        </AuthProvider>
       </body>
     </html>
   )

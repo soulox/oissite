@@ -21,15 +21,15 @@
 
 export const whmcsConfig = {
   // Base WHMCS URL
-  url: process.env.WHMCS_URL || '',
+  url: process.env.WHMCS_URL || 'https://secure.outsourceis.com',
   
   // WHMCS Version
   version: process.env.WHMCS_VERSION || '7.10.2',
   
   // API Configuration
   api: {
-    identifier: process.env.WHMCS_API_IDENTIFIER || '',
-    secret: process.env.WHMCS_API_SECRET || '',
+    identifier: process.env.WHMCS_API_IDENTIFIER || 'your-whmcs-username',
+    secret: process.env.WHMCS_API_SECRET || 'your-whmcs-password',
     accessKey: process.env.WHMCS_API_ACCESS_KEY || '',
     webhookSecret: process.env.WHMCS_WEBHOOK_SECRET || '',
   },

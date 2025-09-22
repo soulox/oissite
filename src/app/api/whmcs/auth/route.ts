@@ -14,15 +14,21 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = loginSchema.parse(body)
 
-    const result = await whmcsClient.validateLogin(
-      validatedData.email,
-      validatedData.password
-    )
-
-    return NextResponse.json({
-      success: true,
-      data: result,
-    })
+    // Use the validateLogin method which has UTF-8 skip strategy
+    try {
+      const result = await whmcsClient.validateLogin(validatedData.email, validatedData.password)
+      
+      return NextResponse.json({
+        success: true,
+        data: result,
+      })
+    } catch (authError) {
+      console.error('Authentication failed:', authError)
+      return NextResponse.json(
+        { error: 'Invalid credentials' },
+        { status: 401 }
+      )
+    }
   } catch (error) {
     console.error('Error validating login:', error)
     
